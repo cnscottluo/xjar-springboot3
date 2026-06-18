@@ -5,7 +5,7 @@ import io.xjar.XEncryptor;
 import io.xjar.XKit;
 import io.xjar.key.XKey;
 import io.xjar.reflection.XReflection;
-import org.springframework.boot.loader.LaunchedURLClassLoader;
+import org.springframework.boot.loader.launch.LaunchedClassLoader;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -25,7 +25,7 @@ import java.util.Enumeration;
  * @author Payne 646742615@qq.com
  * 2018/11/23 23:04
  */
-public class XBootClassLoader extends LaunchedURLClassLoader {
+public class XBootClassLoader extends LaunchedClassLoader {
     private final XBootURLHandler xBootURLHandler;
     private final Object urlClassPath;
     private final Method getResource;
@@ -37,7 +37,7 @@ public class XBootClassLoader extends LaunchedURLClassLoader {
     }
 
     public XBootClassLoader(URL[] urls, ClassLoader parent, XDecryptor xDecryptor, XEncryptor xEncryptor, XKey xKey) throws Exception {
-        super(urls, parent);
+        super(false, urls, parent);
         this.xBootURLHandler = new XBootURLHandler(xDecryptor, xEncryptor, xKey, this);
         // JDK 17+ 强封装: ucp 字段不可反射访问，优雅降级以保证兼容 JDK 21
         Object ucpTemp = null;
