@@ -23,6 +23,10 @@ import java.util.Set;
  */
 public abstract class XKit implements XConstants {
 
+    static {
+        XCryptoProvider.ensure();
+    }
+
     /**
      * 从输入流中读取一行字节码
      *

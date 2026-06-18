@@ -210,6 +210,7 @@ class XBootEncryptDecryptTest {
         XKey key = XKit.key(TEST_PASSWORD);
         assertNotNull(key, "密钥对象不应为 null");
         assertNotNull(key.getAlgorithm(), "密钥算法不应为 null");
+        assertEquals(XConstants.DEFAULT_ALGORITHM, key.getAlgorithm(), "默认密钥算法应使用SM4");
     }
 
     // --- helpers ---

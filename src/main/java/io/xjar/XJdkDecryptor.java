@@ -5,9 +5,12 @@ import io.xjar.key.XKey;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.spec.AlgorithmParameterSpec;
 import java.io.*;
+import java.util.Locale;
 
 /**
  * JDK内置解密算法的解密器
@@ -16,6 +19,10 @@ import java.io.*;
  * 2018/11/22 14:01
  */
 public class XJdkDecryptor implements XDecryptor {
+
+    static {
+        XCryptoProvider.ensure();
+    }
 
     @Override
     public void decrypt(XKey key, File src, File dest) throws IOException {
@@ -35,8 +42,9 @@ public class XJdkDecryptor implements XDecryptor {
         CipherInputStream cis = null;
         try {
             String algorithm = key.getAlgorithm();
+            boolean gcmMode = algorithm.toUpperCase(Locale.ROOT).contains("/GCM/");
             Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key.getDecryptKey(), algorithm.split("[/]")[0]), new IvParameterSpec(key.getIvParameter()));
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key.getDecryptKey(), algorithm.split("[/]")[0]), createParameterSpec(gcmMode, key.getIvParameter()));
             cis = new CipherInputStream(in, cipher);
             XKit.transfer(cis, out);
         } catch (Exception e) {
@@ -50,8 +58,9 @@ public class XJdkDecryptor implements XDecryptor {
     public InputStream decrypt(XKey key, InputStream in) throws IOException {
         try {
             String algorithm = key.getAlgorithm();
+            boolean gcmMode = algorithm.toUpperCase(Locale.ROOT).contains("/GCM/");
             Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key.getDecryptKey(), algorithm.split("[/]")[0]), new IvParameterSpec(key.getIvParameter()));
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key.getDecryptKey(), algorithm.split("[/]")[0]), createParameterSpec(gcmMode, key.getIvParameter()));
             return new CipherInputStream(in, cipher);
         } catch (Exception e) {
             throw new IOException(e);
@@ -62,11 +71,19 @@ public class XJdkDecryptor implements XDecryptor {
     public OutputStream decrypt(XKey key, OutputStream out) throws IOException {
         try {
             String algorithm = key.getAlgorithm();
+            boolean gcmMode = algorithm.toUpperCase(Locale.ROOT).contains("/GCM/");
             Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key.getDecryptKey(), algorithm.split("[/]")[0]), new IvParameterSpec(key.getIvParameter()));
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key.getDecryptKey(), algorithm.split("[/]")[0]), createParameterSpec(gcmMode, key.getIvParameter()));
             return new CipherOutputStream(out, cipher);
         } catch (Exception e) {
             throw new IOException(e);
         }
+    }
+
+    private AlgorithmParameterSpec createParameterSpec(boolean gcmMode, byte[] iv) {
+        if (gcmMode) {
+            return new GCMParameterSpec(XConstants.GCM_TAG_LENGTH_BITS, iv);
+        }
+        return new IvParameterSpec(iv);
     }
 }
