@@ -22,7 +22,7 @@ import java.util.zip.ZipOutputStream;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * XJar Spring Boot 3.1.5 + JDK 21 适配验证测试
+ * XJar Spring Boot 3.5.15 + JDK 21 适配验证测试
  * 测试 Spring Boot Fat JAR 的加密/解密轮转（encrypt → decrypt → 内容还原）
  */
 class XBootEncryptDecryptTest {
@@ -71,9 +71,9 @@ class XBootEncryptDecryptTest {
         Manifest mf = new Manifest();
         Attributes attrs = mf.getMainAttributes();
         attrs.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-        attrs.put(new Attributes.Name("Main-Class"), "org.springframework.boot.loader.JarLauncher");
+        attrs.put(new Attributes.Name("Main-Class"), "org.springframework.boot.loader.launch.JarLauncher");
         attrs.put(new Attributes.Name("Start-Class"), "com.example.Application");
-        attrs.put(new Attributes.Name("Spring-Boot-Version"), "3.1.5");
+        attrs.put(new Attributes.Name("Spring-Boot-Version"), "3.5.15");
         attrs.put(new Attributes.Name("Spring-Boot-Classes"), "BOOT-INF/classes/");
         attrs.put(new Attributes.Name("Spring-Boot-Lib"), "BOOT-INF/lib/");
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -196,7 +196,7 @@ class XBootEncryptDecryptTest {
                     assertEquals("io.xjar.boot.XJarLauncher", mainClass,
                             "加密后 Main-Class 应替换为 XJarLauncher");
                     String bootMainClass = mf.getMainAttributes().getValue("Boot-Main-Class");
-                    assertEquals("org.springframework.boot.loader.JarLauncher", bootMainClass,
+                    assertEquals("org.springframework.boot.loader.launch.JarLauncher", bootMainClass,
                             "Boot-Main-Class 应保存原始 Main-Class");
                     return;
                 }
