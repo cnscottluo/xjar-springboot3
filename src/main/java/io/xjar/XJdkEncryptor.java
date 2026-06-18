@@ -17,6 +17,10 @@ import java.io.*;
  */
 public class XJdkEncryptor implements XEncryptor {
 
+    static {
+        XKit.ensureBouncyCastleProvider();
+    }
+
     @Override
     public void encrypt(XKey key, File src, File dest) throws IOException {
         if (!dest.getParentFile().exists() && !dest.getParentFile().mkdirs()) {
@@ -34,7 +38,6 @@ public class XJdkEncryptor implements XEncryptor {
     public void encrypt(XKey key, InputStream in, OutputStream out) throws IOException {
         CipherInputStream cis = null;
         try {
-            XKit.ensureBouncyCastleProvider();
             String algorithm = key.getAlgorithm();
             Cipher cipher = Cipher.getInstance(algorithm);
             cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key.getEncryptKey(), algorithm.split("[/]")[0]), new IvParameterSpec(key.getIvParameter()));
@@ -50,7 +53,6 @@ public class XJdkEncryptor implements XEncryptor {
     @Override
     public InputStream encrypt(XKey key, InputStream in) throws IOException {
         try {
-            XKit.ensureBouncyCastleProvider();
             String algorithm = key.getAlgorithm();
             Cipher cipher = Cipher.getInstance(algorithm);
             cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key.getEncryptKey(), algorithm.split("[/]")[0]), new IvParameterSpec(key.getIvParameter()));
@@ -63,7 +65,6 @@ public class XJdkEncryptor implements XEncryptor {
     @Override
     public OutputStream encrypt(XKey key, OutputStream out) throws IOException {
         try {
-            XKit.ensureBouncyCastleProvider();
             String algorithm = key.getAlgorithm();
             Cipher cipher = Cipher.getInstance(algorithm);
             cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key.getEncryptKey(), algorithm.split("[/]")[0]), new IvParameterSpec(key.getIvParameter()));
