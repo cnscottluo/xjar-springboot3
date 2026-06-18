@@ -11,9 +11,9 @@
         <relativePath/>
     </parent>
 
-    <groupId>io.github.cnscottluo</groupId>
+    <groupId>com.github.cnscottluo</groupId>
     <artifactId>xjar-springboot3</artifactId>
-    <version>0.0.1</version>
+    <version>3.5.15</version>
     <packaging>jar</packaging>
 
     <name>xjar-springboot3</name>
