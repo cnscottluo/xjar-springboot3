@@ -19,8 +19,10 @@ final class XCryptoProvider {
         try {
             Class<?> providerClass = Class.forName("org.bouncycastle.jce.provider.BouncyCastleProvider");
             return (Provider) providerClass.getDeclaredConstructor().newInstance();
-        } catch (Throwable ignored) {
+        } catch (ClassNotFoundException ignored) {
             return null;
+        } catch (ReflectiveOperationException | ClassCastException e) {
+            throw new IllegalStateException("Failed to initialize BouncyCastle provider: " + e.getMessage(), e);
         }
     }
 
