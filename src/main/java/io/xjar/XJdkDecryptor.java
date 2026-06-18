@@ -18,6 +18,7 @@ import java.io.*;
  * 2018/11/22 14:01
  */
 public class XJdkDecryptor implements XDecryptor {
+    private static final int GCM_TAG_LENGTH_BITS = 128;
 
     static {
         XCryptoProvider.ensure();
@@ -78,7 +79,7 @@ public class XJdkDecryptor implements XDecryptor {
 
     private AlgorithmParameterSpec createParameterSpec(String algorithm, byte[] iv) {
         if (algorithm.toUpperCase().contains("/GCM/")) {
-            return new GCMParameterSpec(128, iv);
+            return new GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv);
         }
         return new IvParameterSpec(iv);
     }
