@@ -34,6 +34,7 @@ public class XJdkDecryptor implements XDecryptor {
     public void decrypt(XKey key, InputStream in, OutputStream out) throws IOException {
         CipherInputStream cis = null;
         try {
+            XKit.ensureBouncyCastleProvider();
             String algorithm = key.getAlgorithm();
             Cipher cipher = Cipher.getInstance(algorithm);
             cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key.getDecryptKey(), algorithm.split("[/]")[0]), new IvParameterSpec(key.getIvParameter()));
@@ -49,6 +50,7 @@ public class XJdkDecryptor implements XDecryptor {
     @Override
     public InputStream decrypt(XKey key, InputStream in) throws IOException {
         try {
+            XKit.ensureBouncyCastleProvider();
             String algorithm = key.getAlgorithm();
             Cipher cipher = Cipher.getInstance(algorithm);
             cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key.getDecryptKey(), algorithm.split("[/]")[0]), new IvParameterSpec(key.getIvParameter()));
@@ -61,6 +63,7 @@ public class XJdkDecryptor implements XDecryptor {
     @Override
     public OutputStream decrypt(XKey key, OutputStream out) throws IOException {
         try {
+            XKit.ensureBouncyCastleProvider();
             String algorithm = key.getAlgorithm();
             Cipher cipher = Cipher.getInstance(algorithm);
             cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key.getDecryptKey(), algorithm.split("[/]")[0]), new IvParameterSpec(key.getIvParameter()));
