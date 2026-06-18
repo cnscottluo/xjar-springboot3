@@ -50,8 +50,8 @@ class XBootEncryptDecryptTest {
 
             // A fake compiled class file (content won't be real bytecode,
             // but for encryption/decryption round-trip it doesn't need to be)
-            byte[] classBytes = "FakeClassBytes-Hello-XJar".getBytes();
-            putStoredEntry(zos, "BOOT-INF/classes/com/example/HelloController.class", classBytes);
+            byte[] classBytes = "FakeClassBytes-App-XJar".getBytes();
+            putStoredEntry(zos, "BOOT-INF/classes/com/example/AppMain.class", classBytes);
 
             // BOOT-INF/lib/ directory
             putDirEntry(zos, "BOOT-INF/lib/");
@@ -169,8 +169,8 @@ class XBootEncryptDecryptTest {
         assertTrue(decJar.exists(), "解密后 JAR 应存在");
 
         // 解密后的 BOOT-INF/classes 中的 class 文件内容应与原始内容一致
-        byte[] originalClassBytes = extractEntry(srcJar, "BOOT-INF/classes/com/example/HelloController.class");
-        byte[] decryptedClassBytes = extractEntry(decJar, "BOOT-INF/classes/com/example/HelloController.class");
+        byte[] originalClassBytes = extractEntry(srcJar, "BOOT-INF/classes/com/example/AppMain.class");
+        byte[] decryptedClassBytes = extractEntry(decJar, "BOOT-INF/classes/com/example/AppMain.class");
 
         assertNotNull(originalClassBytes, "原始 JAR 应包含 class 文件");
         assertNotNull(decryptedClassBytes, "解密 JAR 应包含 class 文件");
