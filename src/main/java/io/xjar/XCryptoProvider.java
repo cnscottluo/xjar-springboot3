@@ -1,7 +1,6 @@
 package io.xjar;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
+import java.security.Provider;
 import java.security.Security;
 
 final class XCryptoProvider {
@@ -10,8 +9,18 @@ final class XCryptoProvider {
     }
 
     static void ensure() {
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(new BouncyCastleProvider());
+        Provider provider = loadBouncyCastleProvider();
+        if (provider != null && Security.getProvider(provider.getName()) == null) {
+            Security.addProvider(provider);
+        }
+    }
+
+    private static Provider loadBouncyCastleProvider() {
+        try {
+            Class<?> providerClass = Class.forName("org.bouncycastle.jce.provider.BouncyCastleProvider");
+            return (Provider) providerClass.getDeclaredConstructor().newInstance();
+        } catch (Throwable ignored) {
+            return null;
         }
     }
 
