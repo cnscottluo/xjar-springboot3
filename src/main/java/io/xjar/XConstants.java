@@ -16,7 +16,7 @@ public interface XConstants {
     String XJAR_INF_IDX = "INDEXES.IDX";
     String CRLF = System.getProperty("line.separator");
 
-    String DEFAULT_ALGORITHM = "SM4/CBC/PKCS7Padding";
+    String DEFAULT_ALGORITHM = "SM4/GCM/NoPadding";
     int DEFAULT_KEYSIZE = 128;
     int DEFAULT_IVSIZE = 128;
 

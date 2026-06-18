@@ -5,8 +5,10 @@ import io.xjar.key.XKey;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.spec.AlgorithmParameterSpec;
 import java.io.*;
 
 /**
@@ -40,7 +42,7 @@ public class XJdkEncryptor implements XEncryptor {
         try {
             String algorithm = key.getAlgorithm();
             Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key.getEncryptKey(), algorithm.split("[/]")[0]), new IvParameterSpec(key.getIvParameter()));
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key.getEncryptKey(), algorithm.split("[/]")[0]), createParameterSpec(algorithm, key.getIvParameter()));
             cis = new CipherInputStream(in, cipher);
             XKit.transfer(cis, out);
         } catch (Exception e) {
@@ -55,7 +57,7 @@ public class XJdkEncryptor implements XEncryptor {
         try {
             String algorithm = key.getAlgorithm();
             Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key.getEncryptKey(), algorithm.split("[/]")[0]), new IvParameterSpec(key.getIvParameter()));
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key.getEncryptKey(), algorithm.split("[/]")[0]), createParameterSpec(algorithm, key.getIvParameter()));
             return new CipherInputStream(in, cipher);
         } catch (Exception e) {
             throw new IOException(e);
@@ -67,10 +69,17 @@ public class XJdkEncryptor implements XEncryptor {
         try {
             String algorithm = key.getAlgorithm();
             Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key.getEncryptKey(), algorithm.split("[/]")[0]), new IvParameterSpec(key.getIvParameter()));
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key.getEncryptKey(), algorithm.split("[/]")[0]), createParameterSpec(algorithm, key.getIvParameter()));
             return new CipherOutputStream(out, cipher);
         } catch (Exception e) {
             throw new IOException(e);
         }
+    }
+
+    private AlgorithmParameterSpec createParameterSpec(String algorithm, byte[] iv) {
+        if (algorithm.toUpperCase().contains("/GCM/")) {
+            return new GCMParameterSpec(128, iv);
+        }
+        return new IvParameterSpec(iv);
     }
 }
