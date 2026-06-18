@@ -6,7 +6,6 @@ import io.xjar.filter.XNotEntryFilter;
 import io.xjar.key.XKey;
 import io.xjar.key.XSecureRandom;
 import io.xjar.key.XSymmetricSecureKey;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -14,7 +13,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.Security;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,13 +24,7 @@ import java.util.Set;
 public abstract class XKit implements XConstants {
 
     static {
-        ensureBouncyCastleProvider();
-    }
-
-    public static void ensureBouncyCastleProvider() {
-        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
-            Security.addProvider(new BouncyCastleProvider());
-        }
+        XCryptoProvider.ensure();
     }
 
     /**

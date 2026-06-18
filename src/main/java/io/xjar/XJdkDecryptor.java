@@ -18,7 +18,7 @@ import java.io.*;
 public class XJdkDecryptor implements XDecryptor {
 
     static {
-        XKit.ensureBouncyCastleProvider();
+        XCryptoProvider.ensure();
     }
 
     @Override
