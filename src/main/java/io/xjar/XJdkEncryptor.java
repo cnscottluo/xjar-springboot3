@@ -10,6 +10,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.spec.AlgorithmParameterSpec;
 import java.io.*;
+import java.util.Locale;
 
 /**
  * JDK内置加密算法的加密器
@@ -18,7 +19,6 @@ import java.io.*;
  * 2018/11/22 14:01
  */
 public class XJdkEncryptor implements XEncryptor {
-    private static final int GCM_TAG_LENGTH_BITS = 128;
 
     static {
         XCryptoProvider.ensure();
@@ -42,8 +42,9 @@ public class XJdkEncryptor implements XEncryptor {
         CipherInputStream cis = null;
         try {
             String algorithm = key.getAlgorithm();
+            boolean gcmMode = algorithm.toUpperCase(Locale.ROOT).contains("/GCM/");
             Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key.getEncryptKey(), algorithm.split("[/]")[0]), createParameterSpec(algorithm, key.getIvParameter()));
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key.getEncryptKey(), algorithm.split("[/]")[0]), createParameterSpec(gcmMode, key.getIvParameter()));
             cis = new CipherInputStream(in, cipher);
             XKit.transfer(cis, out);
         } catch (Exception e) {
@@ -57,8 +58,9 @@ public class XJdkEncryptor implements XEncryptor {
     public InputStream encrypt(XKey key, InputStream in) throws IOException {
         try {
             String algorithm = key.getAlgorithm();
+            boolean gcmMode = algorithm.toUpperCase(Locale.ROOT).contains("/GCM/");
             Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key.getEncryptKey(), algorithm.split("[/]")[0]), createParameterSpec(algorithm, key.getIvParameter()));
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key.getEncryptKey(), algorithm.split("[/]")[0]), createParameterSpec(gcmMode, key.getIvParameter()));
             return new CipherInputStream(in, cipher);
         } catch (Exception e) {
             throw new IOException(e);
@@ -69,17 +71,18 @@ public class XJdkEncryptor implements XEncryptor {
     public OutputStream encrypt(XKey key, OutputStream out) throws IOException {
         try {
             String algorithm = key.getAlgorithm();
+            boolean gcmMode = algorithm.toUpperCase(Locale.ROOT).contains("/GCM/");
             Cipher cipher = Cipher.getInstance(algorithm);
-            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key.getEncryptKey(), algorithm.split("[/]")[0]), createParameterSpec(algorithm, key.getIvParameter()));
+            cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key.getEncryptKey(), algorithm.split("[/]")[0]), createParameterSpec(gcmMode, key.getIvParameter()));
             return new CipherOutputStream(out, cipher);
         } catch (Exception e) {
             throw new IOException(e);
         }
     }
 
-    private AlgorithmParameterSpec createParameterSpec(String algorithm, byte[] iv) {
-        if (algorithm.toUpperCase().contains("/GCM/")) {
-            return new GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv);
+    private AlgorithmParameterSpec createParameterSpec(boolean gcmMode, byte[] iv) {
+        if (gcmMode) {
+            return new GCMParameterSpec(XConstants.GCM_TAG_LENGTH_BITS, iv);
         }
         return new IvParameterSpec(iv);
     }
